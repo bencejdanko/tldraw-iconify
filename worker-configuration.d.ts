@@ -3,6 +3,14 @@
 // Runtime types generated with workerd@1.20250508.0 2025-04-01 nodejs_compat
 declare namespace Cloudflare {
 	interface Env {
+		CLOUDFLARE_S3_API_URL: string;
+		CLOUDFLARE_ACCOUNT_ID: string;
+		CLOUDFLARE_ACCESS_KEY_ID: string;
+		CLOUDFLARE_SECRET_ACCESS_KEY: string;
+		CLOUDFLARE_BUCKET_NAME: string;
+		CLOUDFLARE_CDN_URL: string;
+		VITE_SUPABASE_URL: string;
+		SERVICE_ROLE_KEY: string;
 	}
 }
 interface Env extends Cloudflare.Env {}
