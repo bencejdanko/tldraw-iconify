@@ -1,66 +1,140 @@
-// src/App.tsx
+import { useCallback, useState } from 'react'
+import { Tldraw, getSnapshot, useEditor, TLRecord, TLAssetId } from 'tldraw'
+import 'tldraw/tldraw.css'
+import { Clipboard, Shapes } from 'lucide-react'
+import { toast, Toaster } from 'sonner'
+import { IconLookup } from './components/IconLookup'
+import { getBookmarkPreview } from './components/getBookmarkPreview'
 
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import cloudflareLogo from "./assets/Cloudflare_Logo.svg";
-import honoLogo from "./assets/hono.svg";
-import "./App.css";
-
-function App() {
-  const [count, setCount] = useState(0);
-  const [name, setName] = useState("unknown");
-
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-        <a href="https://hono.dev/" target="_blank">
-          <img src={honoLogo} className="logo cloudflare" alt="Hono logo" />
-        </a>
-        <a href="https://workers.cloudflare.com/" target="_blank">
-          <img
-            src={cloudflareLogo}
-            className="logo cloudflare"
-            alt="Cloudflare logo"
-          />
-        </a>
-      </div>
-      <h1>Vite + React + Hono + Cloudflare</h1>
-      <div className="card">
-        <button
-          onClick={() => setCount((count) => count + 1)}
-          aria-label="increment"
-        >
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <div className="card">
-        <button
-          onClick={() => {
-            fetch("/api/")
-              .then((res) => res.json() as Promise<{ name: string }>)
-              .then((data) => setName(data.name));
-          }}
-          aria-label="get name"
-        >
-          Name from API is: {name}
-        </button>
-        <p>
-          Edit <code>worker/index.ts</code> to change the name
-        </p>
-      </div>
-      <p className="read-the-docs">Click on the logos to learn more</p>
-    </>
-  );
+// Function to prune unused assets from records, similar to official tldraw implementation
+function pruneUnusedAssets(records: TLRecord[]) {
+	const usedAssets = new Set<TLAssetId>()
+	
+	// Find all assets that are actually being used by shapes
+	for (const record of records) {
+		if (record.typeName === 'shape' && 'assetId' in record.props && record.props.assetId) {
+			usedAssets.add(record.props.assetId)
+		}
+	}
+	
+	// Filter out assets that are not being used
+	return records.filter((r) => r.typeName !== 'asset' || usedAssets.has(r.id))
 }
 
-export default App;
+// Function to get a cleaned snapshot with unused records pruned
+function getCleanedSnapshot(editor: ReturnType<typeof useEditor>) {
+	const { document, session } = getSnapshot(editor.store)
+	
+	// Prune unused assets from the document records
+	const cleanedDocument = {
+		...document,
+		store: pruneUnusedAssets(Object.values(document.store))
+			.reduce((acc, record) => {
+				acc[record.id] = record
+				return acc
+			}, {} as Record<string, TLRecord>)
+	}
+	
+	return { document: cleanedDocument, session }
+}
+
+function SnapshotToolbar({ onToggleIconLookup }: { onToggleIconLookup: () => void }) {
+	const editor = useEditor()
+
+	const copyToClipboard = useCallback(async () => {
+		try {
+			const snapshotData = getCleanedSnapshot(editor)
+			const jsonString = JSON.stringify(snapshotData, null, 2)
+			await navigator.clipboard.writeText(jsonString)
+			toast.success('Copied cleaned snapshot to clipboard!')
+		} catch (error) {
+			toast.error('Failed to copy to clipboard')
+			console.error('Failed to copy to clipboard:', error)
+		}
+	}, [editor])
+
+	return (
+		<div style={{ 
+			padding: 20, 
+			pointerEvents: 'all', 
+			display: 'flex', 
+			flexDirection: 'column',
+			gap: '10px',
+			alignItems: 'flex-start'
+		}}>
+			<div style={{
+				display: 'flex', 
+				gap: '10px',
+				alignItems: 'center',
+				backgroundColor: 'rgba(255, 255, 255, 0.9)',
+				borderRadius: '8px',
+				boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+				padding: '20px'
+			}}>
+				<button 
+					onClick={copyToClipboard}
+					style={{
+						padding: '8px 12px',
+						backgroundColor: '#6f42c1',
+						color: 'white',
+						border: 'none',
+						borderRadius: '4px',
+						cursor: 'pointer',
+						display: 'flex',
+						alignItems: 'center',
+						gap: '6px'
+					}}
+					title="Copy to Clipboard"
+				>
+					<Clipboard size={16} />
+				</button>
+				<button 
+					onClick={onToggleIconLookup}
+					style={{
+						padding: '8px 12px',
+						backgroundColor: '#17a2b8',
+						color: 'white',
+						border: 'none',
+						borderRadius: '4px',
+						cursor: 'pointer'
+					}}
+				>
+					<Shapes size={16} />
+				</button>
+			</div>
+		</div>
+	)
+}
+
+export default function App() {
+	const [showIconLookup, setShowIconLookup] = useState(true)
+
+	return (
+		<div style={{ position: 'fixed', inset: 0 }}>
+			<Tldraw
+				components={{
+					SharePanel: () => <SnapshotToolbar onToggleIconLookup={() => setShowIconLookup(!showIconLookup)} />,
+				}}
+        onMount={(editor) => {
+          editor.registerExternalAssetHandler('url', getBookmarkPreview)
+        }}
+			/>
+			{showIconLookup && (
+				<div style={{
+					position: 'fixed',
+					left: '20px',
+					top: '50%',
+					transform: 'translateY(-50%)',
+					zIndex: 1000,
+					pointerEvents: 'all'
+				}}>
+					<IconLookup 
+						maxResults={24} 
+						onClose={() => setShowIconLookup(false)} 
+					/>
+				</div>
+			)}
+			<Toaster />
+		</div>
+	)
+}
