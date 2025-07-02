@@ -42,10 +42,10 @@ A modified version of [tldraw](https://tldraw.com) that includes seamless **Icon
 
 2. **Set up environment variables:**
    ```bash
-   cp .env.template .env
+   cp .env.template .env.local
    ```
    
-   Update the `.env` file with your unfurler service URL (optional for basic functionality):
+   Update the `.env.local` file with your unfurler service URL (optional for basic functionality):
    ```bash
    VITE_UNFURLER_URL=https://your-unfurler-worker.your-domain.workers.dev
    ```
@@ -86,7 +86,10 @@ This project uses environment variables for configuration:
 
 - `VITE_UNFURLER_URL`: URL of your unfurler service for rich bookmark previews (optional)
 
-For local development, create a `.env.local` file to override variables without affecting your main `.env` file.
+### Environment Setup:
+- **Local development**: Copy `.env.template` to `.env.local` and customize values
+- **Production**: Set environment variables in Cloudflare Workers dashboard
+- **Cloudflare Worker development**: Use `.dev.vars` file for `wrangler dev`
 
 ## 🚀 Development
 
