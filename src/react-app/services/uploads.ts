@@ -1,12 +1,13 @@
 import { supabase } from '../lib/supabase'
+import { Json } from '../types/database'
 
 export interface Upload {
   id: string
   user_id: string
   filename: string
   file_url: string
-  file_size?: number
-  metadata?: Record<string, unknown>
+  file_size?: number | null
+  metadata?: Json | null
   created_at: string
   updated_at: string
 }
@@ -14,8 +15,8 @@ export interface Upload {
 export interface CreateUploadData {
   filename: string
   file_url: string
-  file_size?: number
-  metadata?: Record<string, unknown>
+  file_size?: number | null
+  metadata?: Json | null
 }
 
 export class UploadService {

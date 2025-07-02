@@ -1,6 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "tldraw-mod",
+  "account_id": "15f3bb956d1aa152447f02c84b247204",
   "main": "./src/worker/index.ts",
   "compatibility_date": "2025-04-01",
   "compatibility_flags": ["nodejs_compat"],

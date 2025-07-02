@@ -4,17 +4,6 @@ import { toast } from 'sonner'
 import { UploadService, Upload as UploadType } from '../services/uploads'
 import { useAuth } from '../hooks/useAuth'
 
-interface Upload {
-  id: string
-  user_id: string
-  filename: string
-  file_url: string
-  file_size?: number
-  metadata?: Record<string, unknown>
-  created_at: string
-  updated_at: string
-}
-
 interface SnapshotData {
   document: {
     store: Record<string, unknown>
@@ -101,7 +90,7 @@ export function UploadsView({ onClose, onLoadSnapshot }: UploadsViewProps) {
     })
   }
 
-  const formatFileSize = (bytes?: number) => {
+  const formatFileSize = (bytes?: number | null) => {
     if (!bytes) return 'Unknown size'
     const sizes = ['Bytes', 'KB', 'MB', 'GB']
     const i = Math.floor(Math.log(bytes) / Math.log(1024))
