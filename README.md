@@ -7,6 +7,8 @@ Bringing the full power of [tldraw](https://tldraw.com) directly into your edito
 
 ![tldraw VS Code Extension Demo](./image.png)
 
+The integration can be tested at https://tldraw-iconify.pages.dev/.
+
 ## Features
 
 ### Native .tldr Support
