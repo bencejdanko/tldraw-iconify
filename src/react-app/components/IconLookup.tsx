@@ -16,52 +16,6 @@ export function IconLookup({ maxResults = 20, defaultQuery = '', onClose }: Icon
   const [error, setError] = useState<string | null>(null)
   const [selectedColor, setSelectedColor] = useState('#000000')
 
-  const applySvgColor = useCallback((svgContent: string, color: string, size: number = 64): string => {
-    // Parse the SVG content and apply the color and size
-    const parser = new DOMParser()
-    const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml')
-    const svgElement = svgDoc.querySelector('svg')
-    
-    if (!svgElement) return svgContent
-    
-    // Increase SVG dimensions
-    svgElement.setAttribute('width', size.toString())
-    svgElement.setAttribute('height', size.toString())
-    
-    // Preserve aspect ratio by adjusting viewBox if it exists
-    const viewBox = svgElement.getAttribute('viewBox')
-    if (!viewBox) {
-      // If no viewBox exists, create one based on the original width/height or use default
-      const originalWidth = svgElement.getAttribute('width') || '24'
-      const originalHeight = svgElement.getAttribute('height') || '24'
-      svgElement.setAttribute('viewBox', `0 0 ${originalWidth} ${originalHeight}`)
-    }
-    
-    // Apply color to all fillable elements
-    const fillableElements = svgElement.querySelectorAll('path, circle, rect, polygon, ellipse, line, polyline')
-    fillableElements.forEach(element => {
-      // Only apply fill if the element doesn't already have a fill attribute or if it's currentColor
-      const currentFill = element.getAttribute('fill')
-      if (!currentFill || currentFill === 'currentColor' || currentFill === 'none') {
-        element.setAttribute('fill', color)
-      }
-      
-      // Also handle stroke for line elements
-      if (element.tagName.toLowerCase() === 'line' || element.tagName.toLowerCase() === 'polyline') {
-        const currentStroke = element.getAttribute('stroke')
-        if (!currentStroke || currentStroke === 'currentColor') {
-          element.setAttribute('stroke', color)
-        }
-      }
-    })
-    
-    // Handle the case where the SVG itself has currentColor
-    if (svgElement.getAttribute('fill') === 'currentColor') {
-      svgElement.setAttribute('fill', color)
-    }
-    
-    return new XMLSerializer().serializeToString(svgDoc)
-  }, [])
 
   const searchIcons = useCallback(async (searchQuery: string) => {
     if (!searchQuery.trim()) {
@@ -90,20 +44,25 @@ export function IconLookup({ maxResults = 20, defaultQuery = '', onClose }: Icon
 
   const copyIconSvg = useCallback(async (icon: IconifyIcon) => {
     try {
-      const svgUrl = iconifyService.getIconSvgUrl(icon.prefix, icon.name)
+      // Use the API to get the colored and sized SVG directly
+      // This ensures consistency with the search results and handles complex SVGs correctly
+      const svgUrl = iconifyService.getIconSvgUrl(icon.prefix, icon.name, {
+        color: selectedColor,
+        width: 64,
+        height: 64
+      })
+      
       const response = await fetch(svgUrl)
+      if (!response.ok) throw new Error('Failed to fetch SVG from API')
       const svgContent = await response.text()
       
-      // Apply the selected color and increase size to the SVG (fixed 64px)
-      const coloredSvg = applySvgColor(svgContent, selectedColor, 64)
-      
-      await navigator.clipboard.writeText(coloredSvg)
+      await navigator.clipboard.writeText(svgContent)
       toast.success(`Copied ${icon.prefix}:${icon.name} with color ${selectedColor} (64px)`)
     } catch (err) {
       toast.error('Failed to copy SVG')
       console.error('Copy error:', err)
     }
-  }, [applySvgColor, selectedColor])
+  }, [selectedColor])
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -131,14 +90,28 @@ export function IconLookup({ maxResults = 20, defaultQuery = '', onClose }: Icon
         alignItems: 'center',
         marginBottom: '16px'
       }}>
-        <h3 style={{ 
-          margin: 0, 
-          fontSize: '18px', 
-          fontWeight: '600',
-          color: '#333'
-        }}>
-          Icon Lookup
-        </h3>
+        <div 
+          className="drag-handle"
+          style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '10px',
+            flex: 1,
+            cursor: 'grab'
+          }}
+        >
+          <img src="/iconify.png" alt="Iconify" style={{ width: '24px', height: '24px', pointerEvents: 'none' }} />
+          <h3 style={{ 
+            margin: 0, 
+            fontSize: '18px', 
+            fontWeight: '600',
+            color: '#333',
+            userSelect: 'none',
+            pointerEvents: 'none'
+          }}>
+            Icon Lookup
+          </h3>
+        </div>
         {onClose && (
           <button
             onClick={onClose}
