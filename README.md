@@ -5,7 +5,7 @@
 
 Bringing the full power of [tldraw](https://tldraw.com) directly into your editor. Edit .tldr files with a native-feeling experience, offline-first, and integrated with Iconify.
 
-![tldraw VS Code Extension Demo](./image.png)
+<img width="828" height="432" alt="image" src="https://github.com/user-attachments/assets/59c9084e-cb4f-4012-8e1a-55a8a0e3e5ca" />
 
 The integration can be tested at https://tldraw-iconify.pages.dev/.
 
