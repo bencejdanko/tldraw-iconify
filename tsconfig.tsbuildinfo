@@ -1,0 +1,1 @@
+{"root":["./src/env.d.ts","./src/react-app/App.tsx","./src/react-app/main.tsx","./src/react-app/vite-env.d.ts","./src/react-app/components/IconLookup.tsx","./src/react-app/components/getBookmarkPreview.tsx","./src/react-app/services/iconify.ts","./src/react-app/types/database.ts","./src/react-app/types/iconify.ts"],"version":"5.8.3"}
