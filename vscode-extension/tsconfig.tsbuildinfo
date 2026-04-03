@@ -1,1 +1,1 @@
-{"root":["./src/TldrEditorProvider.ts","./src/extension.ts"],"version":"5.9.3"}
+{"root":["./src/TldrEditorProvider.ts","./src/TldrPasteProvider.ts","./src/extension.ts"],"version":"5.9.3"}

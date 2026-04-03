@@ -19,7 +19,9 @@
   ],
   "main": "./dist/extension.js",
   "icon": "public/pencil.png",
-  "activationEvents": [],
+  "activationEvents": [
+    "onLanguage:markdown"
+  ],
   "contributes": {
     "languages": [
       {

@@ -270,6 +270,7 @@ export default function App() {
 	const draggableRef = useRef(null)
 
     const lastSentSnapshot = useRef<string>('');
+    const isReceivingUpdate = useRef<boolean>(false);
 
     // Sync with VS Code
     useEffect(() => {
@@ -279,11 +280,21 @@ export default function App() {
             const message = event.data;
             switch (message.type) {
                 case 'update':
-                    if (message.text && message.text !== lastSentSnapshot.current) {
+                    if (message.text) {
                         try {
-                            const data = JSON.parse(message.text);
-                            editor.loadSnapshot(data);
-                            lastSentSnapshot.current = message.text;
+                            const incomingData = JSON.parse(message.text);
+                            const currentData = lastSentSnapshot.current ? JSON.parse(lastSentSnapshot.current) : null;
+
+                            // Only load if the data is actually different (ignoring whitespace)
+                            if (JSON.stringify(incomingData) !== JSON.stringify(currentData)) {
+                                isReceivingUpdate.current = true;
+                                try {
+                                    editor.loadSnapshot(incomingData);
+                                    lastSentSnapshot.current = message.text;
+                                } finally {
+                                    isReceivingUpdate.current = false;
+                                }
+                            }
                         } catch (e) {
                             console.error('Failed to parse snapshot', e);
                         }
@@ -302,6 +313,7 @@ export default function App() {
 
         let timeout: any;
         const onChange = () => {
+            if (isReceivingUpdate.current) return;
             clearTimeout(timeout);
             timeout = setTimeout(() => {
                 const snapshot = getCleanedSnapshot(editor);
@@ -311,7 +323,7 @@ export default function App() {
                     type: 'edit',
                     text: snapshotStr
                 });
-            }, 500); // Debounce to avoid excessive writes
+            }, 200); // 200ms debounce is more responsive while still avoiding too many writes
         };
 
         const dispose = editor.store.listen(onChange, { source: 'user', scope: 'document' });
@@ -335,6 +347,10 @@ export default function App() {
 				onMount={(editor) => {
                     setEditor(editor)
 					editor.registerExternalAssetHandler('url', getBookmarkPreview)
+                    // signal ready to VS Code to get the initial text
+                    if (vscodeApi) {
+                        vscodeApi.postMessage({ type: 'ready' });
+                    }
 				}}
 			>
 				{showIconLookup && (

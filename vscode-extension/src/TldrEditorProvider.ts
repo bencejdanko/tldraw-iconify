@@ -56,16 +56,14 @@ export class TldrEditorProvider implements vscode.CustomTextEditorProvider {
 		// Receive message from the webview.
 		webviewPanel.webview.onDidReceiveMessage((e: any) => {
 			switch (e.type) {
+				case 'ready':
+					updateWebview();
+					return;
 				case 'edit':
 					this.updateTextDocument(document, e.text);
 					return;
 			}
 		});
-
-		// Wait briefly for webview to be ready before sending initial update
-		setTimeout(() => {
-			updateWebview();
-		}, 1000);
 	}
 
 	/**
@@ -119,10 +117,12 @@ export class TldrEditorProvider implements vscode.CustomTextEditorProvider {
 		const edit = new vscode.WorkspaceEdit();
 
 		// Replace the entire document content with our new text.
-		edit.replace(
-			document.uri,
-			new vscode.Range(0, 0, document.lineCount, 0),
-			json);
+		const fullRange = new vscode.Range(
+			document.positionAt(0),
+			document.positionAt(document.getText().length)
+		);
+
+		edit.replace(document.uri, fullRange, json);
 
 		return vscode.workspace.applyEdit(edit);
 	}
