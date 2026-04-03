@@ -100,7 +100,7 @@ export function IconLookup({ maxResults = 20, defaultQuery = '', onClose }: Icon
             cursor: 'grab'
           }}
         >
-          <img src="/iconify.png" alt="Iconify" style={{ width: '24px', height: '24px', pointerEvents: 'none' }} />
+          <img src={(window as any).__PUBLIC_PATH__ ? `${(window as any).__PUBLIC_PATH__}/iconify.png` : "/iconify.png"} alt="Iconify" style={{ width: '24px', height: '24px', pointerEvents: 'none' }} />
           <h3 style={{ 
             margin: 0, 
             fontSize: '18px', 

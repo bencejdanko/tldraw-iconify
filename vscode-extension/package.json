@@ -18,8 +18,25 @@
     "Visualization"
   ],
   "main": "./dist/extension.js",
+  "icon": "public/pencil.png",
   "activationEvents": [],
   "contributes": {
+    "languages": [
+      {
+        "id": "tldr",
+        "extensions": [
+          ".tldr"
+        ],
+        "aliases": [
+          "tldraw"
+        ],
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "public/pencil.svg",
+          "dark": "public/pencil.svg"
+        }
+      }
+    ],
     "customEditors": [
       {
         "viewType": "tldraw.editor",

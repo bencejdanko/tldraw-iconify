@@ -193,7 +193,7 @@ function SnapshotToolbar({ onToggleIconLookup }: {
 						e.currentTarget.style.boxShadow = '0 2px 4px rgba(8, 145, 178, 0.2)'
 					}}
 				>
-					<img src="/iconify.png" alt="Iconify" style={{ width: '18px', height: '18px', display: 'block' }} />
+					<img src={(window as any).__PUBLIC_PATH__ ? `${(window as any).__PUBLIC_PATH__}/iconify.png` : "/iconify.png"} alt="Iconify" style={{ width: '18px', height: '18px', display: 'block' }} />
 				</button>
 			</div>
 			{isInputVisible && (

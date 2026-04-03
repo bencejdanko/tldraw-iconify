@@ -102,6 +102,7 @@ export class TldrEditorProvider implements vscode.CustomTextEditorProvider {
     <script>
         const vscode = acquireVsCodeApi();
         window.vscode = vscode;
+        window.__PUBLIC_PATH__ = "${webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'public'))}";
     </script>
     <script type="module" src="${webview.asWebviewUri(vscode.Uri.joinPath(distPath, 'assets/index.js'))}"></script>
 </body>
