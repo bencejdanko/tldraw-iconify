@@ -1,5 +1,5 @@
-import { useCallback, useState, useRef, useEffect } from 'react'
-import { Tldraw, getSnapshot, useEditor, TLRecord, TLAssetId } from 'tldraw'
+import { useCallback, useState, useRef, useEffect, useMemo } from 'react'
+import { Tldraw, getSnapshot, useEditor, TLRecord, TLAssetId, createTLStore, defaultShapeUtils } from 'tldraw'
 import 'tldraw/tldraw.css'
 import { Clipboard, Upload, Check, X } from 'lucide-react'
 import { toast, Toaster } from 'sonner'
@@ -260,9 +260,67 @@ function SnapshotToolbar({ onToggleIconLookup }: {
 }
 
 
+// Get VS Code API once
+declare const vscode: any;
+const vscodeApi = typeof vscode !== 'undefined' ? vscode : null;
+
 export default function App() {
-	const [showIconLookup, setShowIconLookup] = useState(true)
+	const [showIconLookup, setShowIconLookup] = useState(!vscodeApi) // Hide by default in VS Code
+    const [editor, setEditor] = useState<ReturnType<typeof useEditor> | null>(null)
 	const draggableRef = useRef(null)
+
+    const lastSentSnapshot = useRef<string>('');
+
+    // Sync with VS Code
+    useEffect(() => {
+        if (!vscodeApi || !editor) return;
+
+        const handleMessage = (event: MessageEvent) => {
+            const message = event.data;
+            switch (message.type) {
+                case 'update':
+                    if (message.text && message.text !== lastSentSnapshot.current) {
+                        try {
+                            const data = JSON.parse(message.text);
+                            editor.loadSnapshot(data);
+                            lastSentSnapshot.current = message.text;
+                        } catch (e) {
+                            console.error('Failed to parse snapshot', e);
+                        }
+                    }
+                    break;
+            }
+        };
+
+        window.addEventListener('message', handleMessage);
+        return () => window.removeEventListener('message', handleMessage);
+    }, [editor]);
+
+    // Handle store changes for VS Code
+    useEffect(() => {
+        if (!vscodeApi || !editor) return;
+
+        let timeout: any;
+        const onChange = () => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                const snapshot = getCleanedSnapshot(editor);
+                const snapshotStr = JSON.stringify(snapshot, null, 2);
+                lastSentSnapshot.current = snapshotStr;
+                vscodeApi.postMessage({
+                    type: 'edit',
+                    text: snapshotStr
+                });
+            }, 500); // Debounce to avoid excessive writes
+        };
+
+        const dispose = editor.store.listen(onChange, { source: 'user', scope: 'document' });
+        return () => {
+            dispose();
+            clearTimeout(timeout);
+        };
+    }, [editor]);
+
 
 	return (
 		<div style={{ position: 'fixed', inset: 0 }}>
@@ -275,35 +333,8 @@ export default function App() {
 					),
 				}}
 				onMount={(editor) => {
+                    setEditor(editor)
 					editor.registerExternalAssetHandler('url', getBookmarkPreview)
-
-					// Check for snapshot parameter in URL
-					const params = new URLSearchParams(window.location.search)
-					const snapshotUrl = params.get('snapshot')
-					
-					if (snapshotUrl) {
-						// Wrap external URLs in a CORS proxy to bypass security restrictions
-						const targetUrl = snapshotUrl.startsWith('http') 
-							? `https://corsproxy.io/?${encodeURIComponent(snapshotUrl)}` 
-							: snapshotUrl
-
-						toast.promise(
-							fetch(targetUrl)
-								.then(res => {
-									if (!res.ok) throw new Error('Failed to fetch snapshot')
-									return res.json()
-								})
-								.then(data => {
-									editor.loadSnapshot(data)
-									return data
-								}),
-							{
-								loading: 'Loading snapshot from URL...',
-								success: 'Snapshot loaded successfully!',
-								error: 'Failed to load snapshot from URL'
-							}
-						)
-					}
 				}}
 			>
 				{showIconLookup && (
