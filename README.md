@@ -1,75 +1,50 @@
-# tldraw PWA: Offline-Capable Drawing with Iconify
+# tldraw for VSIX: Local-First Diagramming
 
-An offline-capable, private version of [tldraw](https://tldraw.com) that includes seamless **Iconify icon lookup** and a full **Progressive Web App (PWA)** experience. This version is completely decoupled from any cloud storage or authentication—your data stays on your device.
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/bencejdanko/tldraw-pwa-app)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## ✨ Key Features
+Bringing the full power of [tldraw](https://tldraw.com) directly into your editor. Edit `.tldr` files with a native-feeling experience, offline-first, and integrated with Iconify.
 
-- 🎨 **Full tldraw functionality** - Complete drawing, diagramming, and whiteboard capabilities.
-- 📶 **Offline-First** - Works perfectly without an internet connection using Service Workers.
-- 📱 **PWA Support** - Install it on your desktop or mobile device for a native-like experience.
-- 🔍 **Iconify integration** - Search and insert from 200,000+ icons with real-time search.
-- 📋 **Clean Snapshot Export** - Copy pruned JSON snapshots of your drawings to the clipboard.
-- 💎 **Premium Interface** - Clean, modern UI with glassmorphism and smooth transitions.
+![tldraw VS Code Extension Demo](./image.png)
 
-## 🛠️ Tech Stack
+## ✨ Features
 
-- [**tldraw**](https://tldraw.com) - Infinite canvas drawing and diagramming.
-- [**Iconify**](https://iconify.design) - Massive collection of open source icons.
-- [**Vite PWA**](https://vite-pwa-org.netlify.app/) - Powering the offline and installable experience.
-- [**React**](https://react.dev/) - Modern UI library with TypeScript support.
-- [**Lucide React**](https://lucide.dev/) - Beautifully simple icons for the UI.
+### 🛠️ Native `.tldr` Support
+Open, edit, and save `.tldr` files directly within VS Code. Changes are synced locally, making it the perfect tool for local-first documentation and brainstorming.
 
-## Getting Started
+### 🔍 Integrated Iconify Lookup
+Search through 200,000+ open-source icons from 100+ collections directly within the canvas.
+- **Instant Search**: Find icons from Material Design, Lucide, Font Awesome, and more.
+- **Customizable**: Adjust icon colors before copying or pasting.
+- **Quick Import**: Copy SVG code directly to your clipboard for use elsewhere or use them directly in your canvas.
 
-### Quick Start
+### ⚡ Offline-First & Private
+- **No Cloud Required**: Your files stay on your machine.
+- **Work Anywhere**: Full functionality without an internet connection.
+- **Fast Performance**: Optimized for a smooth, lag-free drawing experience.
 
-1. **Clone and install dependencies:**
-   ```bash
-   git clone <your-repo-url> tldraw-pwa
-   cd tldraw-pwa
-   pnpm install
-   ```
+## 🚀 Getting Started
 
-2. **Start development server:**
-   ```bash
-   pnpm dev
-   ```
+### Installation
 
-3. **Build for production (PWA):**
-   ```bash
-   pnpm build
-   ```
+1. Open **VS Code**.
+2. Go to the **Extensions** view (`Ctrl+Shift+X`).
+3. Search for **tldraw for VS Code** (or install the `.vsix` from the releases).
 
-## 🎮 How to Use
+### How to Use
 
-### Drawing & File Management
-- Use all standard tldraw features.
-- To save your work, use the built-in tldraw menu (**File > Save**) to download a `.tldr` file.
-- To load previous work, use (**File > Open**) to select your saved file.
-
-### Icon Lookup
-1. **Toggle icon panel**: Click the shapes button (🔷) in the custom toolbar to show/hide the icon lookup panel.
-2. **Search icons**: Type in the search box to find icons from 100+ collections.
-3. **Customize color**: Use the color picker to change icon colors.
-4. **Copy SVG**: Click any icon to copy its SVG code (64px) to your clipboard for use in other tools.
-
-### PWA Installation
-- **Desktop**: Click the install icon in your browser's address bar.
-- **Mobile**: Use "Add to Home Screen" from your browser's sharing menu.
-- Once installed, the app works entirely offline.
+1. **Create or Open**: Create a new file with the `.tldr` extension or right-click any existing `.tldr` file.
+2. **Editor**: Select **Open With...** -> **tldraw Editor**.
+3. **Icon Lookup**: Use the custom shapes button (🔷) in the toolbar to toggle the Iconify search panel.
+4. **Drawing**: Enjoy the full range of tldraw tools: arrows, shapes, handwriting, and more.
 
 ## 🏗️ Project Structure
 
-```
-src/
-└── react-app/          # Main React application
-    ├── App.tsx          # Main app with tldraw & PWA logic
-    ├── components/      # React components (IconLookup, etc.)
-    ├── services/        # API services (Iconify search)
-    └── types/           # TypeScript type definitions
-```
+- `vscode-extension/`: The VS Code extension source code and build files.
+- `src/`: The core React application shared between the PWA and the extension.
+- `image.png`: Demo screenshot of the extension in action.
 
 ## 📄 License
 
-This project builds upon tldraw and incorporates Iconify. Please respect the licenses of all included libraries and icon collections.
+This project is open-source under the [MIT License](LICENSE). Built upon the amazing [tldraw](https://tldraw.com) and [Iconify](https://iconify.design) ecosystems.
 
