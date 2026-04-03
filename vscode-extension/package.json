@@ -1,15 +1,15 @@
 {
-  "name": "tldraw-vscode",
-  "displayName": "tldraw for VS Code",
+  "name": "tldraw-iconify",
+  "displayName": "tldraw-iconify",
   "description": "Edit .tldr files with the full tldraw experience",
   "version": "1.0.0",
   "publisher": "bencejdanko",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/bencejdanko/tldraw-pwa-app"
+    "url": "https://github.com/bencejdanko/tldraw-iconify"
   },
-  "homepage": "https://tldraw-pwa.pages.dev",
+  "homepage": "https://tldraw-iconify.pages.dev",
   "engines": {
     "vscode": "^1.90.0"
   },

@@ -1,5 +1,5 @@
 {
-  "name": "tldraw-pwa",
+  "name": "tldraw-iconify",
   "description": "An offline-capable tldraw PWA",
   "version": "1.0.0",
   "type": "module",
@@ -30,7 +30,7 @@
     "build": "tsc -b && vite build",
     "dev": "vite",
     "lint": "eslint .",
-    "deploy": "npx wrangler pages deploy dist --project-name tldraw-pwa",
+    "deploy": "npx wrangler pages deploy dist --project-name tldraw-iconify",
     "preview": "npm run build && vite preview"
   }
 }
