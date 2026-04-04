@@ -290,7 +290,10 @@ export default function App() {
                                 isReceivingUpdate.current = true;
                                 try {
                                     editor.loadSnapshot(incomingData);
-                                    lastSentSnapshot.current = message.text;
+                                    // Update lastSentSnapshot to the actual state in the editor (normalized/pruned)
+                                    // to avoid triggering a redundant edit event on the next onChange
+                                    const cleaned = getCleanedSnapshot(editor);
+                                    lastSentSnapshot.current = JSON.stringify(cleaned, null, 2);
                                 } finally {
                                     isReceivingUpdate.current = false;
                                 }
@@ -318,6 +321,10 @@ export default function App() {
             timeout = setTimeout(() => {
                 const snapshot = getCleanedSnapshot(editor);
                 const snapshotStr = JSON.stringify(snapshot, null, 2);
+                
+                // Skip if the state is identical to what we already know (e.g. normalization/pruning didn't change it)
+                if (snapshotStr === lastSentSnapshot.current) return;
+
                 lastSentSnapshot.current = snapshotStr;
                 vscodeApi.postMessage({
                     type: 'edit',

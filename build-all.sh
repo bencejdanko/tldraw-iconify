@@ -16,8 +16,8 @@ cd vscode-extension
 echo "🔌 Building the VS Code extension..."
 pnpm build
 
-# 4. Bundle Assets (Copy root /dist into the extension)
-echo "🏗️ Bundling web application assets into the extension..."
+# 4. Bundle Assets (Copy root assets into the extension, including README)
+echo "🏗️ Bundling web application assets and sync README into the extension..."
 pnpm run bundle-assets
 
 # 5. Create VSIX Package

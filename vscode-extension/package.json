@@ -2,7 +2,7 @@
   "name": "tldraw-iconify",
   "displayName": "tldraw-iconify",
   "description": "Edit .tldr files with the full tldraw experience",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "publisher": "bencejdanko",
   "license": "MIT",
   "repository": {
@@ -55,7 +55,7 @@
   "scripts": {
     "vscode:prepublish": "npm run build && npm run bundle-assets",
     "build": "tsc -b",
-    "bundle-assets": "rm -rf dist-app public && cp -r ../dist ./dist-app && cp -r ../public ./public",
+    "bundle-assets": "rm -rf dist-app public README.md && cp -r ../dist ./dist-app && cp -r ../public ./public && cp ../README.md ./README.md",
     "package": "npx @vscode/vsce package",
     "publish": "npx ovsx publish"
   },
