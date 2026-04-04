@@ -1,6 +1,6 @@
 # tldraw-iconify for Web and VSIX
 
-[![Version](https://img.shields.io/badge/version-1.0.1-blue.svg)](https://github.com/bencejdanko/tldraw-iconify)
+[![Version](https://img.shields.io/badge/version-1.0.2-blue.svg)](https://github.com/bencejdanko/tldraw-iconify)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Bringing the full power of [tldraw](https://tldraw.com) directly into your editor. Edit .tldr files with a native-feeling experience, offline-first, and integrated with Iconify.
